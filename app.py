@@ -3,22 +3,25 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 from keras.preprocessing.text import Tokenizer
-from keras.preprocessing.sequence import pad_sequences
+import joblib
+# from keras.preprocessing.sequence import pad_sequences
 import pickle
 import re
 
-model = keras.models.load_model("./models/Model.h5")
-with open("./models/tokenizer.pickle", "rb") as tok:
-	tokenizer = pickle.load(tok)
+model = tf.keras.models.load_model("models/sentiment_analysis_model.keras")
+tokenizer = joblib.load("models/tokenizer.pkl")
 
+max_length = 300
 
-def preprocess_text(text):
-	text = text.lower()
-	text = [text]
-	seq_text = tokenizer.texts_to_sequences(text)
-	final_text = pad_sequences(seq_text, maxlen=20, dtype="int32", value=0)
-	return final_text
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 
+def predict_sentiment(text):
+    sequence = tokenizer.texts_to_sequences([text])  # Convert to sequences
+    sequence_padded = pad_sequences(sequence, maxlen=max_length, padding="post")
+
+    prediction = model.predict(sequence_padded)[0][0]  # Get probability
+
+    return "Positive" if prediction > 0.5 else "Negative"
 
 app = Flask(__name__)
  
@@ -28,20 +31,11 @@ def home():
 
 @app.route("/predict", methods=["GET", "POST"])
 def predict():
-	if request.method=="POST":
-		text = request.form['text']
-		ready_text = preprocess_text(text)
-		prediction = model.predict(ready_text)
-		prediction = round(float(prediction))
-		result = ""
-		if prediction == 0:
-			result = "Negative"
-		elif prediction == 1:
-			result = "Positive"
-
-		return render_template("home.html", prediction = prediction)
-	else:
-		return render_template("home.html")
+    if request.method == "POST":
+        user_input = request.form['text']
+        prediction = predict_sentiment(user_input)
+        return render_template("home.html", prediction=prediction)
+    return render_template("home.html", prediction=None)
 	
 if __name__ == "__main__":
 	app.run()

@@ -12,10 +12,8 @@
 	<p style="text-align: center;"><a href="https://bit.ly/3l7n1jW">https://bit.ly/3l7n1jW</a></p>
 	<div class="content-section"><form action="/predict" method="POST">
 	<p><textarea class="form-control form-control-lg" name="text" rows="5" placeholder="Enter something to see if tweet is negative or positive."></textarea></p>
-	<p style="text-align: center;"><input class="btn btn-success" name="submit" type="submit" value="Submit" /> {% if prediction == 1 %}</p>
-	<h2 class="positive">{{ "Positive!" }}</h2>
-	{% elif prediction == 0 %}
-	<h2 class="negative">{{ "Negative!" }}</h2>
-	{% endif %}</form></div>
+	<p style="text-align: center;"><input class="btn btn-success" name="submit" type="submit" value="Submit" /></p>
+	<h2>{{prediction}}</h2>
+	</form></div>
 </body>
 </html>

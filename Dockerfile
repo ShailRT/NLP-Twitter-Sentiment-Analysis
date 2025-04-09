@@ -1,5 +1,5 @@
 FROM python:3.7.9-slim-buster
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONUNBUFFERED=1
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install python3-h5py -y \
